@@ -16,15 +16,26 @@ namespace Token{
 		identifierTk, integerTk, eofTk, errTk
 	};
 
-	// enum Id{
-	// 	Keyword=0,
-	// 	Integer,
-	// 	Identifier,
-	// 	Operator,
-	// 	Delimiter,
-	// 	EoF,
-	// 	Error
-	// };
+	//const std::string Idname[] = {
+	//	"iter","void","return","scan","print",
+	//	"program","cond","then","let","int",
+
+	//	"=","<",">",":","+","-","*","/","%",".",
+	//	"(",")",",","{","}",";","[","]",
+	//	
+	//	"identifier","integer","EOF","error"
+	//};
+
+	const std::string Idname[] = {
+		"iter","void","return","scan","print",
+		"program","cond","then","let","int",
+
+		"assign","less","greater","colon","plus","minus",
+		"mult","bslash","mod","dot","lparen","rparen","comma",
+		"lcbracket","rcbracket","semicolon","lbracket","rbracket",
+
+		"identifier","integer","EOF","error"
+	};
 
 	// typedef enum tokenInstances {
 
@@ -53,22 +64,9 @@ namespace Token{
 	// 	"Error"
 	// };
 
-	// const string Keywords[] = {
-	// 	"iter",
-	// 	"void",
-	// 	"return",
-	// 	"scan",
-	// 	"print",
-	// 	"program",
-	// 	"cond",
-	// 	"then",
-	// 	"let",
-	// 	"int"
-	// };
 
 	typedef struct Token_T {
-		Token::Id id;
-		//char instance[8];
+		Id id;
 		std::string instance;
 		int line;
 	}Token;

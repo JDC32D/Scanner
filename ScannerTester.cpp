@@ -1,22 +1,23 @@
 #include "ScannerTester.h"
 #include "Scanner.h"
-//#include "Token.h"
 
 void TestScanner(std::FILE* file) {
 
 	Token::Token token;
-	std::printf("[Line#] : Instance\n");
+	std::printf("[L#] [Instance] | Identifier\n----------------------------\n");
 	Scanner scanner(file);
-	//while(token.line == 0){
+	while(1){
 		token = scanner.getToken();
-		printf("[%3d] : %s\n",
-			token.line, token.instance.c_str());
-		// switch(token.id){
-		// 	case Token::eofTk:
-		// 	case Token::errTk:
-		// 		return;
-		// 	default:
-		// 		break;
-		// }
-	//}
+		printf("[%2d] [%8s] | %s \n",
+			token.line, token.instance.c_str(), 
+			Token::Idname[token.id].c_str() );
+		 switch(token.id){
+		 	case Token::eofTk:
+		 	case Token::errTk:
+				std::cin.get();
+		 		return;
+		 	default:
+		 		break;
+		 }
+	}
 }

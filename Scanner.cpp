@@ -1,185 +1,370 @@
 #include "Scanner.h"
-#include "Token.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <string>
-#include <ctype.h>
+//#include "Token.h"
+//#include <fstream>
 
-const char * Alphabet[] = {
-	"a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r",
-	"s","t","u","v","w","x","y","z","A","B","C","D","E","F","G","H","I","J",
-	"K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z","0","1",
-	"2","3","4","5","6","7","8","9","=","<",">",":","+","-","*","/","%",".",
-	"(",")",",","{","}",";","[","]"," ","\n","\r","&"
-};
-
-const char * tokenArray[] = {
-	"iter","void","return","scan","print",
-	"program","cond","then","let","int"
-	,"=","<",">",":","+","-","*","/","%",".",
-	"(",")",",","{","}",";","[","]","identifier",
-	"integer","EOF","error"
+char tokenArray[] = {
+	'=','<','>',':','+','-','*','/','%','.',
+	'(',')',',','{','}',';','[',']'
 };
 
 
-// int Scanner::filter() {
+ std::string Keywords[] = {
+ 	"iter",
+ 	"void",
+ 	"return",
+ 	"scan",
+ 	"print",
+ 	"program",
+ 	"cond",
+ 	"then",
+ 	"let",
+ 	"int"
+ };
 
-// }
-
-// Token::Token Scanner(std::FILE* file) {
-// 	Token::Token token;
-// 	int input, c, position = -1;
-
-// 	while( (input = fgetc(this->file)) != EOF ) {
-
-// 		if (input == ' ')
-// 			continue;
-
-// 		else if (input == '\n')
-// 			line++;
-
-// 		// Process Letter
-// 		else if (isalpha(input)){
-		
-// 			for( c = fgetc(this->file); isalnum(c); c = fgetc(this->file) ){
-// 				position = (position + 1) % 8;
-// 				token.instance[position] = c;
-// 			}
-
-// 			// Cleanup from getchar()
-// 			token.instance[position] = ' ';
-// 			fputc(c, this->file);
-// 			position = -1;
-			
-// 		}
-
-// 		// Process Digit
-// 		else if(isdigit(input)){
-			
-// 			while( isdigit( ( c = getchar() ) ) ) {
-// 				position = (position + 1) % 8;
-// 				token.instance[position] = c;
-// 			}
-
-// 			// Cleanup from getchar()
-// 			token.instance[position] = ' ';
-// 			fputc(c, this->file);
-// 			position = -1;
-
-// 		}
-// 	}
-// }
 
 int Scanner::filter(){
 
-	// Safety Checks
 	if( !this->file ){
 		perror("Filter: File pointer invalid\n");
 		return -1;
 	}
 
-	char c = std::fgetc(this->file);
-	if( std::ferror(this->file) ) {
+	char c = std::fgetc(file);
+	if( std::ferror(file) ) {
 		perror("Filter: Error reading from file");
-		this->buffer="Filter: Error reading from file\n";
+		buffer="Buffer: Error";
 		return -1;
 	}
 
-	// // Handle spaces
-	// if ( c == '\n' ) 
-	// 	this->line++;
-
-	//If it makes it through the filter, put it back
-	// else{
-	// 	fputc(c,this->file);
-	// 	return 1;
-	// }
 }
 
-// enum Id{
-// 	Keyword=0,
-// 	Integer,
-// 	Identifier,
-// 	Operator,
-// 	Delimiter,
-// 	EoF,
-// 	Error
-// };
+/*
+Current Bugs:
+	1) Starting a newline with a space gives me a character not in alphabet
+	2) A single period is not read when it follows a word / is at the end of a line?
+*/
+
+/*
+Attempted Solutions:
+	1)	-continue out of loop 
+		-break out of loop 
+
+	2) -Loop through delimeters and operators while scanning for an identifier.
+	   -70 pt assignment reads that there will always be spaces between them. 
+*/
 
 Token::Token Scanner::getToken() {
 	Token::Token token;
-	
+	line = 1;
+	char input;
 
-	// if (filter() != 1){
-	// 	token.line = this->line;
-	// 	token.instance = this->buffer;
-	// 	this->buffer.clear();
-	// 	//token.id = Token::Id::errTk;
-	// 	return token;
-	// }
-
-	// else {
-	// 	token.line = this->line;
-	// 	token.instance = "Made it through";
-	// 	this->buffer.clear();
-	// 	//token.id = Token::Id::assignTk;
-	// 	return token;
-	// }
-
-	// const auto SetToken = [&](){
-	// 	token.line = this->line;
-	// 	token.instance = this->buffer;
-	// 	this->buffer.clear();
-	// }
-
-	char input, c;
-	//(input = fgetc(this->file)) != EOF
 	while(1) {
 
-		input = fgetc(this->file);
+		input = fgetc(file);
 
-		if (input == ' ')
-			continue;
+		// Check for comment
+		if (input == '&') {
+			// Read until I get to newline
+			while (input != '\n') {
+				// If I reach the end of file instead, return
+				if (input == EOF) {
+					token.line = line;
+					token.instance = "EOF";
+					buffer.clear();
+					token.id = Token::Id::eofTk;
+					return token;
+				}
 
-		else if (input == '\n'){
-			line++;
-			input = fgetc(this->file);
+				input = fgetc(file);
+			}
+
 		}
 
-		else if (input == EOF ){
-			token.line = this -> line;
+		// Check for spaces
+		if (input == ' ') {
+			input = fgetc(file);
+		}
+
+		// Windows newline is \r\n
+		if (input == '\r') {
+			input = fgetc(file);
+		}
+
+		if (input == '\t') {
+			//input = fgetc(file);
+		}
+
+		// Normal newline
+		if (input == '\n'){
+			line++;
+			input = fgetc(file);
+		}
+
+		// Operators and Delimeters checks
+		if (input == '=') {
+			buffer += input;
+			token.line = line;
+			token.instance = buffer;
+			buffer.clear();
+			token.id = Token::Id::assignTk;
+			return token;
+		}
+
+		if (input == '<') {
+			buffer += input;
+			token.line = line;
+			token.instance = buffer;
+			buffer.clear();
+			token.id = Token::Id::lessTk;
+			return token;
+		}
+
+		if (input == '>') {
+			buffer += input;
+			token.line = line;
+			token.instance = buffer;
+			buffer.clear();
+			token.id = Token::Id::greaterTk;
+			return token;
+		}
+
+		if (input == ':') {
+			buffer += input;
+			token.line = line;
+			token.instance = buffer;
+			buffer.clear();
+			token.id = Token::Id::colonTk;
+			return token;
+		}
+
+		if (input == '+') {
+			buffer += input;
+			token.line = line;
+			token.instance = buffer;
+			buffer.clear();
+			token.id = Token::Id::plusTk;
+			return token;
+		}
+
+		if (input == '-') {
+			buffer += input;
+			token.line = line;
+			token.instance = buffer;
+			buffer.clear();
+			token.id = Token::Id::minusTk;
+			return token;
+		}
+
+		if (input == '*') {
+			buffer += input;
+			token.line = line;
+			token.instance = buffer;
+			buffer.clear();
+			token.id = Token::Id::minusTk;
+			return token;
+		}
+
+		if (input == '/') {
+			buffer += input;
+			token.line = line;
+			token.instance = buffer;
+			buffer.clear();
+			token.id = Token::Id::bslashTk;
+			return token;
+		}
+
+		if (input == '%') {
+			buffer += input;
+			token.line = line;
+			token.instance = buffer;
+			buffer.clear();
+			token.id = Token::Id::modTk;
+			return token;
+		}
+
+		if (input == '.') {
+			buffer += input;
+			token.line = line;
+			token.instance = buffer;
+			buffer.clear();
+			token.id = Token::Id::dotTk;
+			return token;
+		}
+
+		if (input == '(') {
+			buffer += input;
+			token.line = line;
+			token.instance = buffer;
+			buffer.clear();
+			token.id = Token::Id::lparenTk;
+			return token;
+		}
+
+		if (input == ')') {
+			buffer += input;
+			token.line = line;
+			token.instance = buffer;
+			buffer.clear();
+			token.id = Token::Id::rparenTk;
+			return token;
+		}
+
+		if (input == ',') {
+			buffer += input;
+			token.line = line;
+			token.instance = buffer;
+			buffer.clear();
+			token.id = Token::Id::commaTk;
+			return token;
+		}
+
+		if (input == '{') {
+			buffer += input;
+			token.line = line;
+			token.instance = buffer;
+			buffer.clear();
+			token.id = Token::Id::lcbracketTk;
+			return token;
+		}
+
+		if (input == '}') {
+			buffer += input;
+			token.line = line;
+			token.instance = buffer;
+			buffer.clear();
+			token.id = Token::Id::rcbracketTk;
+			return token;
+		}
+
+		if (input == ';') {
+			buffer += input;
+			token.line = line;
+			token.instance = buffer;
+			buffer.clear();
+			token.id = Token::Id::semicolonTk;
+			return token;
+		}
+
+		if (input == '[') {
+			buffer += input;
+			token.line = line;
+			token.instance = buffer;
+			buffer.clear();
+			token.id = Token::Id::lbracketTk;
+			return token;
+		}
+
+		if (input == ']') {
+			buffer += input;
+			token.line = line;
+			token.instance = buffer;
+			buffer.clear();
+			token.id = Token::Id::rbracketTk;
+			return token;
+		}
+
+		if (input == EOF) {
+			token.line = line;
 			token.instance = "EOF reached";
+			buffer.clear();
+			token.id = Token::Id::eofTk;
 			return token;
 		}
 
 		// Process Letter
-		else if (isalpha(input)){
+		if (isalpha(input)){
 
-			while ( isalnum(input) ){
-				this -> buffer += input;
-				input = fgetc(this->file);
+			while ( isalpha(input) || isdigit(input) ){
+				buffer += input;
+				input = fgetc(file);
 			}
 
-			token.line = this -> line;
-			token.instance = this -> buffer;
-			printf("Here is the buffer: %s\n", this->buffer.c_str());
-			this->buffer.clear();
-			token.id = Token::Id::Identifier;
-			//Token::Id token.id = Token::Identifier;
+			for (int i = 0; i < 9; i++) {
+				if (buffer == Keywords[i]) {
+					token.line = line;
+					token.instance = buffer;
+					buffer.clear();
+					token.id = static_cast<Token::Id>(i);
+					return token;
+				}
+			}
+
+			token.line = line;
+			token.instance = buffer;
+			buffer.clear();
+			token.id = Token::Id::identifierTk;
 			return token;
 		}
 
 		// Process Digit
-		else if(isdigit(input)){
+		if(isdigit(input)){
 			
 			while( isdigit(input) ){
+
+				// Check that all entries are digits
 				if ( isalpha(input) ){
-
+					token.line = line;
+					token.instance = buffer;
+					token.id = Token::Id::errTk;
+					std::printf("Digit: Letter found while processing digit\n");
+					return token;
 				}
-				this -> buffer += input;
-				input = fgetc(this->file);
-			}
 
+				buffer += input;
+				input = fgetc(file);
+			}
+			token.line = line;
+			token.instance = buffer;
+			buffer.clear();
+			token.id = Token::Id::integerTk;
+			return token;
+
+		}
+
+		// Fallthrough condition
+		else {
+			buffer = "ERROR";
+			token.line = line;
+			token.instance = buffer;
+			buffer.clear();
+			token.id = Token::Id::errTk;
+			std::printf("Error: read character not in alphabet\n");
+			return token;
 		}
 	}
 }
+
+/*
+Commented out code for later use
+//const char * Alphabet[] = {
+//	"a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r",
+//	"s","t","u","v","w","x","y","z","A","B","C","D","E","F","G","H","I","J",
+//	"K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z","0","1",
+//	"2","3","4","5","6","7","8","9","=","<",">",":","+","-","*","/","%",".",
+//	"(",")",",","{","}",";","[","]"," ","\n","\r","&"
+//};
+//
+//const char * tokenArray[] = {
+//	"iter","void","return","scan","print",
+//	"program","cond","then","let","int"
+//	"=","<",">",":","+","-","*","/","%",".",
+//	"(",")",",","{","}",";","[","]","identifier",
+//	"integer","EOF","error"
+//};
+
+//char Alphabet[] = {
+//	'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r',
+//	's','t','u','v','w','x','y','z','A','B','C','D','E','F','G','H','I','J',
+//	'K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','0','1',
+//	'2','3','4','5','6','7','8','9','=','<','>',':','+','-','*','/','%','.',
+//	'(',')',',','{','}',';','[',']',' ','\n','\r','&'
+//};
+//
+//const char * tokenArray[] = {
+//	'iter','void','return','scan','print',
+//	'program','cond','then','let','int'
+//	,'=','<','>',':','+','-','*','/','%','.',
+//	'(',')',',','{','}',';','[',']','identifier',
+//	'integer','EOF','error'
+//};
+*/

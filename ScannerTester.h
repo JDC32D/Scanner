@@ -1,11 +1,9 @@
 #ifndef SCANNERTESTER_H
 #define SCANNERTESTER_H
 
+#include <iostream>
 #include <cstdio>
-//#include <string>
-//#include "Token.h"
 
-// void TestScanner(std::string);
-void TestScanner(std::FILE*);
+void TestScanner(FILE*);
 
 #endif
