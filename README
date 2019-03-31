@@ -1,0 +1,15 @@
+Joseph Carmody's Scanner, Project 1
+
+Project type:
+	Non-FSA table project
+	Line numbers are counted
+
+To Run:
+	make
+	./P1 [filename]
+	./P1 [stdin]
+
+	For keyboard input mode, enter CTRL D to enter EOF token
+
+Known Bugs / Errors:
+	Not having a space after a number can cause an error, if that number is the last token on a line

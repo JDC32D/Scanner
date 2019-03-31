@@ -2,7 +2,6 @@
 #define SCANNERTESTER_H
 
 #include <iostream>
-#include <cstdio>
 
 void TestScanner(FILE*);
 

@@ -14,7 +14,6 @@ void TestScanner(std::FILE* file) {
 		 switch(token.id){
 		 	case Token::eofTk:
 		 	case Token::errTk:
-				std::cin.get();
 		 		return;
 		 	default:
 		 		break;

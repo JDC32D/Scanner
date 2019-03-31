@@ -6,7 +6,7 @@
 namespace Token{
 
 	enum Id {
-		iterTk, voidTk, returnTk, scanTk, printTk,
+		iterTk, voidTk, varTk, returnTk, scanTk, printTk,
 		programTk, condTk, thenTk, letTk, intTk,
 
 		assignTk, lessTk, greaterTk, colonTk, plusTk, minusTk,
@@ -16,19 +16,8 @@ namespace Token{
 		identifierTk, integerTk, eofTk, errTk
 	};
 
-	//const std::string Idname[] = {
-	//	"iter","void","return","scan","print",
-	//	"program","cond","then","let","int",
-
-	//	"=","<",">",":","+","-","*","/","%",".",
-	//	"(",")",",","{","}",";","[","]",
-	//	
-	//	"identifier","integer","EOF","error"
-	//};
-
 	const std::string Idname[] = {
-		"iter","void","return","scan","print",
-		"program","cond","then","let","int",
+		"iter","void","var","return","scan","print","program","cond","then","let","int",
 
 		"assign","less","greater","colon","plus","minus",
 		"mult","bslash","mod","dot","lparen","rparen","comma",
@@ -36,34 +25,6 @@ namespace Token{
 
 		"identifier","integer","EOF","error"
 	};
-
-	// typedef enum tokenInstances {
-
-	// 	//Keywords
-	// 	ITER, VOIDtk, VAR, RETURN, SCAN, PRINT, PROGRAM, COND,
-	// 	THEN, LET, INTtk,
-
-	// 	//Digits / Identifiers
-	// 	DIGIT, 
-	// 	IDENTIFIER, 
-
-	// 	//Operators / Delimiter / White Space
-	// 	ASSIGN, LESS, GREATER, COLON, PLUS, MINUS, MULT, BSLASH
-	// 	MOD, DOT, LPAREN, RPAREN, COMMA, LCBRACKET, RCBRACKET, 
-	// 	SEMICOLON, LBRACKET, RBRACKET, SPACE
-
-	// } Instance;
-
-	// const string IdName[] = {
-	// 	"Keyword",
-	// 	"Integer",
-	// 	"Identifier",
-	// 	"Operator",
-	// 	"Delimiter",
-	// 	"EoF",
-	// 	"Error"
-	// };
-
 
 	typedef struct Token_T {
 		Id id;
@@ -73,3 +34,43 @@ namespace Token{
 
 } 
 #endif
+
+/*
+//const std::string Idname[] = {
+//	"iter","void","return","scan","print",
+//	"program","cond","then","let","int",
+
+//	"=","<",">",":","+","-","*","/","%",".",
+//	"(",")",",","{","}",";","[","]",
+//	
+//	"identifier","integer","EOF","error"
+//};
+
+// typedef enum tokenInstances {
+
+// 	//Keywords
+// 	ITER, VOIDtk, VAR, RETURN, SCAN, PRINT, PROGRAM, COND,
+// 	THEN, LET, INTtk,
+
+// 	//Digits / Identifiers
+// 	DIGIT, 
+// 	IDENTIFIER, 
+
+// 	//Operators / Delimiter / White Space
+// 	ASSIGN, LESS, GREATER, COLON, PLUS, MINUS, MULT, BSLASH
+// 	MOD, DOT, LPAREN, RPAREN, COMMA, LCBRACKET, RCBRACKET, 
+// 	SEMICOLON, LBRACKET, RBRACKET, SPACE
+
+// } Instance;
+
+// const string IdName[] = {
+// 	"Keyword",
+// 	"Integer",
+// 	"Identifier",
+// 	"Operator",
+// 	"Delimiter",
+// 	"EoF",
+// 	"Error"
+// };
+
+*/
