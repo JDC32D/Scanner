@@ -36,36 +36,22 @@ int Scanner::filter(){
 Token::Token Scanner::getToken() {
 
 	Token::Token token;
+	char input;
 	if ( line == 0 )
 		line++;
-	char input;
 
 	while(1) {
 
 		input = fgetc(file);
 
-		// Check for spaces
-		if (input == ' ') {
-			input = fgetc(file);
-		}
+		// Check for tabs, spaces, newline(increment line if so), carriage return.
+		while ( isspace(input) ) {
+			if ( input == '\n' ) 
+				line++;
 
-		// Windows newline is \r\n
-		if (input == '\r') {
 			if(DEBUG)
-				std::printf("\\r character found\n");
-			input = fgetc(file);
-		}
+				std::printf("%c character found\n", input);
 
-		// Tabs
-		if (input == '\t') {
-			input = fgetc(file);
-		}
-
-		// Normal newline
-		if (input == '\n'){
-			if(DEBUG)
-				std::printf("\\n character found\n");
-			line++;
 			input = fgetc(file);
 		}
 
@@ -98,6 +84,18 @@ Token::Token Scanner::getToken() {
 		// Process Letter
 		if (isalpha(input)){
 
+			// First letter of an id / keyword may not be uppercase
+			if ( isupper(input) ) {
+				token.line = line;
+				token.instance = "ERROR";
+				buffer.clear();
+				token.id = Token::Id::errTk;
+				if(ERRMSG)
+					std::printf("ERROR: '%c' first letter of a id/keyword may not be uppercase\n", input);
+				return token;
+			}
+
+			// Process any letters or digits
 			while ( isalnum(input) ) {
 			//while ( ( isalpha(input) || isdigit(input) ) && input != ('\n' || '\r' || ' ') ) {
 				buffer += input;
@@ -119,6 +117,8 @@ Token::Token Scanner::getToken() {
 				}
 			}
 
+			// If there is a space/newline after the word, valid id/keyword. Otherwise, error
+			// It would probably be wise to include EOF condition as well
 			if ( isspace(input) ) {
 				token.line = line;
 				token.instance = buffer;
@@ -277,6 +277,31 @@ Token::Token Scanner::getToken() {
 //	'(',')',',','{','}',';','[',']','identifier',
 //	'integer','EOF','error'
 //};
+
+// Check for spaces
+		// while (input == ' ') {
+		// 	input = fgetc(file);
+		// }
+
+		// // Windows newline is \r\n
+		// if (input == '\r') {
+		// 	if(DEBUG)
+		// 		std::printf("\\r character found\n");
+		// 	input = fgetc(file);
+		// }
+
+		// // Tabs
+		// if (input == '\t') {
+		// 	input = fgetc(file);
+		// }
+
+		// // Normal newline
+		// if (input == '\n'){
+		// 	if(DEBUG)
+		// 		std::printf("\\n character found\n");
+		// 	line++;
+		// 	input = fgetc(file);
+		// }
 
 // if (input == '=') {
 		// 	buffer += input;
